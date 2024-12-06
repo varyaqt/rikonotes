@@ -1,0 +1,226 @@
+.body-reg-login {
+  margin: 0;
+  background-color: rgb(122, 173, 194);
+}
+
+.background {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  
+}
+
+.reg-container {
+  background-color: rgb(212,216,227);
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 16px;
+
+  height: 510px;
+  width: 420px;
+  margin: 10px;
+  box-shadow: inset 1px 2px 3px rgba(0, 0, 0, 0.05);
+  
+}
+
+.login-container {
+  background-color: rgb(212,216,227);
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 16px;
+
+  height: 400px;
+  width: 390px;
+  margin: 10px;
+  box-shadow: inset 1px 2px 3px rgba(0, 0, 0, 0.05);
+}
+
+.penguin-icon {
+  height: 84px;
+  width: 84px;
+  margin-top: 30px;
+  background-color: white;
+  border-radius: 42px;
+  
+}
+
+.registration-text {
+  display: inline;
+  font-size: 20px;
+  color: rgb(60,91,120);
+  font-weight: 800;
+}
+
+.registration-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  justify-items: center;
+  align-items: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.login-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  justify-items: center;
+  align-items: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.login-input,
+.code-word-input,
+.password-input,
+.password-confirm-input {
+  flex: 1;
+  font-size: 17px;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  padding-left: 6px;
+  padding-right: 10px;
+  border: none;
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+  color: rgb(60,91,126);
+  font-weight: 400;
+  box-shadow: inset 1px 2px 3px rgba(0, 0, 0, 0.05);
+}
+
+.create-account-button {
+  font-size: 17px;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background-color: rgb(60,91,120);
+  color: white;
+  border-radius: 16px;
+  border: none;
+  margin-top: 10px;
+  box-shadow: inset 1px 2px 3px rgba(0, 0, 0, 0.05);
+}
+
+.login-account-button {
+  font-size: 17px;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  padding-left: 40px;
+  padding-right: 40px;
+  background-color: rgb(60,91,120);
+  color: white;
+  border-radius: 16px;
+  border: none;
+  margin-top: 10px;
+  box-shadow: inset 1px 2px 3px rgba(0, 0, 0, 0.05);
+}
+
+.create-account-button:hover {
+  cursor: pointer;
+  background-color: rgb(67, 100, 132);
+  box-shadow: inset 1px 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+.input-stroke {
+  display: flex;
+  height: 40px;
+  width: 340px;
+
+}
+
+.code-word-input-container {
+  flex: 1;
+  display: flex;
+  position: relative;
+}
+
+.info-icon {
+  position: absolute;
+  right: 4px;
+  top: 5px;
+  height: 30px;
+  width: 30px;
+}
+
+.info-text {
+  background-color: rgb(60,91,120);
+  color: white;
+  font-weight: 400;
+  position: absolute;
+  width: 200px;
+  right: -230px;
+  top: 11px;
+  font-size: 14px;
+  padding: 8px;
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+
+.info-icon:hover .info-text {
+  opacity: 1;
+}
+
+.info-icon:hover {
+  cursor: pointer;
+}
+
+.info-icon img {
+  width: 30px;
+}
+
+.icon-input {
+  width: 60px;
+  background-color: rgb(122,173,194);
+  align-content: center;
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+  box-shadow: inset 1px 2px 3px rgba(0, 0, 0, 0.05);
+
+}
+
+.icon-input img {
+  width: 17px;
+  padding-top: 2px;
+}
+
+.already-registered {
+  margin-bottom: 0;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.already-registered p {
+  padding-right: 10px;
+  padding-left: 10px;
+  margin: 0;
+  font-size: 17px;
+  color: rgb(60,91,120);
+  font-weight: 600;
+}
+
+.already-registered a {
+  color: rgb(60,91,120);
+  font-size: 17px;
+  font-weight: 600;
+}

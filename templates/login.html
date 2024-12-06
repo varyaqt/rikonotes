@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      RikoNotes: Вход
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link rel="icon" href="../static/icons/icon-for-head.svg">
+    <link rel="stylesheet" href="../static/styles/general.css">
+    <link rel="stylesheet" href="../static/styles/registration-login.css">
+  </head>
+
+  <body class="body-reg-login">
+    <div class="background">
+      <div class="login-container">
+        <img class="penguin-icon" src="../static/icons/penguin.svg">
+        <p class="registration-text">АВТОРИЗАЦИЯ</p>
+        <form class="login-form" id="loginForm">
+          <div class="input-stroke">
+            <div class="icon-input">
+              <img src="../static/icons/user-profile-icon.svg">
+            </div>
+            <input class="login-input" type="text" id="username" name="username" placeholder="Введите логин"></input>
+          </div>
+          <div class="input-stroke">
+            <div class="icon-input">
+              <img src="../static/icons/password-icon.svg">
+            </div>
+            <input class="password-input" type="password" id="password" name="password" placeholder="Введите пароль"></input>
+          </div>
+          <button class="login-account-button">Вход</button>
+          <div class="already-registered">
+            <a href="/register">РЕГИСТРАЦИЯ</a>
+            <p class="already-registered-text">&#10072;</p>
+            <a href="/register">ЗАБЫЛИ ПАРОЛЬ?</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+  
+</html>

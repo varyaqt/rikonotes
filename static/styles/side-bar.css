@@ -1,0 +1,230 @@
+.side-bar-container {
+  /*  ширна произвольная, не стесняйтесь экспериментировать */
+  width: 280px;
+  min-width: 280px;
+  /* фиксируем и выставляем высоту панели на максимум */
+  position: fixed;
+  top: 55px;
+  bottom: 0;
+  margin: 0;
+  /* сдвигаем (прячем) панель относительно левого края страницы */
+  left: 0;
+  /* внутренние отступы */
+  padding: 10px 10px;
+  /* плавный переход смещения панели */
+  -webkit-transition: left 0.3s;
+  -moz-transition: left 0.3s;
+  transition: left 0.3s;
+  /* определяем цвет фона панели */
+  background: #F2F3F7;
+  /* поверх других элементов */
+  z-index: 2000;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.calendar-container {
+  margin: 0;
+  height: 278px;
+  min-height: 278px;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  justify-content: center;
+}
+
+.calendar {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  height: 30px;
+  padding-left: 85px;
+  font-size: 18px;
+  color: rgb(60,91,120);
+  border: 3px solid rgb(60,91,120);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.add-todo-to-stack {
+  height: 35px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 270px;
+  font-size: 13px;
+  color: #97AEBE;
+
+  height: 38px;
+  border-radius: 30px;
+  border: none;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  position: relative;
+}
+
+.input-todo {
+  width: 100%;
+  height: 35px;
+  padding-left: 95px;
+  border: none;
+  border-radius: 10px;
+  color: rgb(60,91,120);
+  transition: padding-left 0.1s;
+}
+
+.input-todo:focus {
+  border: none;
+  outline: none;
+}
+
+.input-active {
+  border: none;
+  outline: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  padding-left: 10px;
+}
+
+/* Изменение цвета плейсхолдера */
+.input-todo::placeholder {
+  color: rgb(60,91,120); /* Цвет плейсхолдера */
+  opacity: 1; /* Устанавливаем непрозрачность на 1, чтобы цвет был полностью видимым */
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.not-active-input-stack::placeholder {
+  color: rgb(122, 25, 25);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.not-active-input-stack {
+  border: 3px solid rgb(60,91,120);
+  padding-left: 70px;
+}
+
+.unvisible-input-img {
+  display: none;
+}
+
+.add-stack-icon {
+  position: absolute;
+  top: 12px;
+  left: 70px;
+  height: 14px;
+  transition: display 0.1s;
+}
+
+.add-todo-stack-button {
+  display: none;
+  height: 37px;
+  width: 80px;
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
+  border: 3px solid rgb(60,91,120);
+  cursor: pointer;
+  position: relative;
+}
+
+.add-todo-stack-button img {
+  position: absolute;
+  top: 6px;
+  left: 18px;
+}
+
+.stack-list-container {
+  border: 3px solid rgb(60,91,120);
+  border-radius: 5px;
+  max-height: 320px;
+  min-height: 0px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 260px;
+  overflow-y: scroll;
+}
+
+.todo-container-stack {
+  padding: 12px 10px;
+  background-color: rgb(60,91,120);
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 3px;
+  margin-right: 3px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 15px;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.todo-container-stack:hover {
+  opacity: 0.96;
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.05);
+}
+
+.task-done-button {
+  background-color: green;
+  color: white;
+  border: none;
+  margin-top: 10px;
+  margin-bottom: 3px;
+  border-radius: 7px;
+  height: 30px;
+  font-size: 14px;
+  display: none;
+  transition: display 0.15s;
+}
+
+.todo-container-stack:hover .task-done-button {
+  display: block;
+}
+
+.task-done-button:hover {
+  background-color: rgb(3, 140, 3);
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.delete-task-button {
+  background-color: rgb(166, 0, 0);
+  color: white;
+  border: none;
+  margin-top: 1px;
+  margin-bottom: 3px;
+  border-radius: 7px;
+  height: 30px;
+  font-size: 14px;
+  display: none;
+  transition: display 0.15s;
+}
+
+.todo-container-stack:hover .delete-task-button {
+  display: block;
+}
+
+.delete-task-button:hover {
+  background-color: rgb(184, 3, 3);
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.count-todo-in-stack-list {
+  height: 20px;
+  text-align: start;
+  padding-top: 7px;
+  color: rgb(60,91,120);
+  font-size: 13px;
+  font-weight: 700;
+}
