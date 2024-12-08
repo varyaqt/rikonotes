@@ -11,7 +11,7 @@ export function loginUser(username, password) {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error('Invalid username or password');
         }
         return response.json();
     })
@@ -19,6 +19,7 @@ export function loginUser(username, password) {
         console.log('Access token:', data.access_token);
         // Сохраняем токен в localStorage или другом хранилище
         localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('user_id', data.user_id);
         return data;
     })
     .catch(error => {
@@ -27,31 +28,31 @@ export function loginUser(username, password) {
     });
 }
 
-// Функция для получения данных пользователя по _id
-export function getUserById(user_id) {
-    const token = localStorage.getItem('access_token');
+// // Функция для получения данных пользователя по _id
+// export function getUserById(user_id) {
+//     const token = localStorage.getItem('access_token');
 
-    return fetch(`http://127.0.0.1:8000/users/${user_id}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-        },
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('User data:', data);
-        return data;
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        throw error;
-    });
-}
+//     return fetch(`http://127.0.0.1:8000/users/${user_id}`, {
+//         method: 'GET',
+//         headers: {
+//             'Authorization': `Bearer ${token}`,
+//         },
+//     })
+//     .then(response => {
+//         if (!response.ok) {
+//             throw new Error('Network response was not ok');
+//         }
+//         return response.json();
+//     })
+//     .then(data => {
+//         console.log('User data:', data);
+//         return data;
+//     })
+//     .catch(error => {
+//         console.error('Error:', error);
+//         throw error;
+//     });
+// }
 
 // Форма для аутентификации
 const loginFormElement = document.getElementById('loginForm');
@@ -67,13 +68,14 @@ loginFormElement.addEventListener('submit', (event) => {
             alert('Login successful:', data);
             // Получаем данные пользователя по _id
             const user_id = data.user_id; // Предположим, что user_id возвращается в ответе
-            return getUserById(user_id);
+            // return getUserById(user_id);
+            window.location.href = "/main";
         })
-        .then(userData => {
-            console.log('User data:', userData);
-            alert('User data:', userData);
-            // Здесь вы можете использовать данные пользователя
-        })
+        // .then(userData => {
+        //     console.log('User data:', userData);
+        //     alert('User data:', userData);
+        //     // Здесь вы можете использовать данные пользователя
+        // })
         .catch(error => {
             console.error('Error:', error);
             alert('Ошибка аутентификации.');
