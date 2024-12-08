@@ -28,31 +28,31 @@ export function loginUser(username, password) {
     });
 }
 
-// // Функция для получения данных пользователя по _id
-// export function getUserById(user_id) {
-//     const token = localStorage.getItem('access_token');
+// Функция для получения данных пользователя по _id
+export function getUserById(user_id) {
+    const token = localStorage.getItem('access_token');
 
-//     return fetch(`http://127.0.0.1:8000/users/${user_id}`, {
-//         method: 'GET',
-//         headers: {
-//             'Authorization': `Bearer ${token}`,
-//         },
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error('Network response was not ok');
-//         }
-//         return response.json();
-//     })
-//     .then(data => {
-//         console.log('User data:', data);
-//         return data;
-//     })
-//     .catch(error => {
-//         console.error('Error:', error);
-//         throw error;
-//     });
-// }
+    return fetch(`http://127.0.0.1:8000/users/${user_id}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('User data:', data);
+        return data;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        throw error;
+    });
+}
 
 // Форма для аутентификации
 const loginFormElement = document.getElementById('loginForm');
@@ -62,22 +62,26 @@ loginFormElement.addEventListener('submit', (event) => {
     let username = document.getElementById('username').value;
     let password = document.getElementById('password').value;
 
-    loginUser(username, password)
+    if (username && password) {
+        loginUser(username, password)
         .then(data => {
             console.log('Login successful:', data);
             alert('Login successful:', data);
             // Получаем данные пользователя по _id
             const user_id = data.user_id; // Предположим, что user_id возвращается в ответе
-            // return getUserById(user_id);
+            return getUserById(user_id);
+        })
+        .then(userData => {
+            console.log('User data:', userData);
+            alert('User data:', userData);
+            // Здесь вы можете использовать данные пользователя
             window.location.href = "/main";
         })
-        // .then(userData => {
-        //     console.log('User data:', userData);
-        //     alert('User data:', userData);
-        //     // Здесь вы можете использовать данные пользователя
-        // })
         .catch(error => {
             console.error('Error:', error);
             alert('Ошибка аутентификации.');
         });
+    } else {
+        alert("Пожалуйста, заполните оба поля.");
+    }
 });
