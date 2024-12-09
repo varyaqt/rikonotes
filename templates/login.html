@@ -10,6 +10,49 @@
     <link rel="icon" href="../static/icons/icon-for-head.svg">
     <link rel="stylesheet" href="../static/styles/general.css">
     <link rel="stylesheet" href="../static/styles/registration-login.css">
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const loginForm = document.getElementById('loginForm');
+
+        loginForm.addEventListener('submit', async (event) => {
+          event.preventDefault(); // Предотвращаем отправку формы
+
+          const username = document.getElementById('username').value;
+          const password = document.getElementById('password').value;
+
+          if (!username || !password) {
+            alert("Пожалуйста, заполните оба поля.");
+            return;
+          }
+
+          try {
+            const response = await fetch('http://127.0.0.1:8000/token', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: new URLSearchParams({
+                username: username,
+                password: password,
+              }),
+            });
+
+            if (!response.ok) {
+              throw new Error('Неверный логин или пароль.');
+            }
+
+            const data = await response.json();
+            localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('user_id', data.user_id);
+
+            window.location.href = "/main"; // Переход на главную страницу
+          } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Ошибка аутентификации. Проверьте введенные данные.');
+          }
+        });
+      });
+    </script>
   </head>
 
   <body class="body-reg-login">
@@ -22,15 +65,15 @@
             <div class="icon-input">
               <img src="../static/icons/user-profile-icon.svg">
             </div>
-            <input class="login-input" type="text" id="username" name="username" placeholder="Введите логин"></input>
+            <input class="login-input" type="text" id="username" name="username" placeholder="Введите логин" required></input>
           </div>
           <div class="input-stroke">
             <div class="icon-input">
               <img src="../static/icons/password-icon.svg">
             </div>
-            <input class="password-input" type="password" id="password" name="password" placeholder="Введите пароль"></input>
+            <input class="password-input" type="password" id="password" name="password" placeholder="Введите пароль" required></input>
           </div>
-          <button class="login-account-button">Вход</button>
+          <button class="login-account-button" type="submit">Вход</button>
           <div class="already-registered">
             <a href="/register">РЕГИСТРАЦИЯ</a>
             <p class="already-registered-text">&#10072;</p>
@@ -40,5 +83,4 @@
       </div>
     </div>
   </body>
-  
 </html>
