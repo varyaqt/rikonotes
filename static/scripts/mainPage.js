@@ -130,6 +130,7 @@ function completeTaskInStack(taskId) {
 inputElement.addEventListener('focus', () => {
   placeholderImage.classList.add('unvisible-input-img');
   inputElement.classList.add('input-active');
+  addToStackButtonElement.style.display = 'block';
 });
 
 
