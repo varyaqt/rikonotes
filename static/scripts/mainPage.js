@@ -53,7 +53,6 @@ function checkInputStackAvailable() {
     inputElement.classList.remove('not-active-input-stack');
     inputElement.placeholder = 'Добавить в стек';
     inputElement.disabled = false;
-    placeholderImage.style.display = 'block';
   };
 };
 
@@ -131,7 +130,6 @@ function completeTaskInStack(taskId) {
 inputElement.addEventListener('focus', () => {
   placeholderImage.classList.add('unvisible-input-img');
   inputElement.classList.add('input-active');
-  addToStackButtonElement.style.display = 'block';
 });
 
 
