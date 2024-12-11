@@ -63,7 +63,7 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  border: 1px solid rgb(60,91,120);
+  border: 3px solid rgb(60,91,120);
   height: 40px;
   width: 120px;
   border-radius: 15px;
@@ -80,11 +80,11 @@
 }
 
 .exit-button {
-  border: 1px solid rgb(60,91,120);
+  border: 3px solid rgb(60,91,120);
   color: rgb(60,91,120);
   border-radius: 10px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: bold;
   height: 40px;
   margin-left: 20px;
   margin-right: 10px;
@@ -96,7 +96,7 @@
   flex: 1;
   text-align: center;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: bold;
   color: rgb(60,91,120);
   margin-right: 7px;
 }
@@ -105,4 +105,5 @@
   color: rgb(60,91,120);
   font-weight: bold;
   font-size: 20px;
+  margin-left: 10px;
 }
