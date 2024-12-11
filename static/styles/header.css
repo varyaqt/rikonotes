@@ -102,7 +102,7 @@
 }
 
 .header-title{
-  font-size: 48px;
-  font-weight: 400;
-
+  color: rgb(60,91,120);
+  font-weight: bold;
+  font-size: 20px;
 }
