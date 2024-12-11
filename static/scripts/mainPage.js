@@ -47,6 +47,7 @@ function checkInputStackAvailable() {
     inputElement.placeholder = 'Стек переполнен';
     inputElement.disabled = true;
     placeholderImage.style.display = 'none';
+    addToStackButtonElement.style.display = 'none'
   } else {
     sizeStackElement.style.color = 'rgb(60,91,120)';
     inputElement.classList.remove('not-active-input-stack');
