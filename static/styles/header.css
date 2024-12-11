@@ -28,12 +28,6 @@
   margin-left: 8px;
 }
 
-.header-left-section p {
-  color: rgb(60,91,120);
-  font-weight: 500;
-  font-size: 14px;
-}
-
 .header-middle-section {
   flex: 1;
   align-content: center;
