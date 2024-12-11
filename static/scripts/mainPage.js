@@ -53,6 +53,7 @@ function checkInputStackAvailable() {
     inputElement.classList.remove('not-active-input-stack');
     inputElement.placeholder = 'Добавить в стек';
     inputElement.disabled = false;
+    placeholderImage.style.display = 'block';
   };
 };
 
