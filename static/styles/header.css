@@ -87,9 +87,12 @@
   font-weight: bold;
   height: 40px;
   margin-left: 20px;
-  margin-right: 10px;
+  margin-right: 20px;
   padding-left: 10px;
   padding-right: 10px;
+  text-decoration: none;
+  align-content: center;
+  background-color: white;
 }
 
 .tutorial-container p {
