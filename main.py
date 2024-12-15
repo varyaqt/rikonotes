@@ -1,10 +1,10 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 from bson import ObjectId
-from typing import List
+from typing import List, Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from starlette.responses import HTMLResponse
@@ -30,6 +30,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
+# Модели данных
 class User(BaseModel):
     username: str
     password: str
@@ -42,7 +43,7 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    username: str | None = None
+    username: Optional[str] = None
 
 
 class Task(BaseModel):
@@ -53,6 +54,7 @@ class Task(BaseModel):
     is_done: bool = False
 
 
+# Вспомогательные функции
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -108,6 +110,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 
+# Эндпоинты
 @app.get("/register", response_class=HTMLResponse)
 async def get_registration_page():
     with open("templates/registration.html", "r", encoding="utf-8") as file:
@@ -125,6 +128,7 @@ def register_user(user: User):
     user_data["password"] = get_password_hash(user.password)
     result = users_collection.insert_one(user_data)
     return {"message": "User registered successfully", "user_id": str(result.inserted_id)}
+
 
 @app.get("/main", response_class=HTMLResponse)
 async def get_start_page():
@@ -152,6 +156,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         "user_id": user["_id"]  # Добавляем идентификатор пользователя
     }
 
+
 @app.get("/", response_class=HTMLResponse)
 async def get_login_page():
     with open("templates/login.html", "r", encoding="utf-8") as file:
@@ -175,6 +180,27 @@ def get_tasks(current_user: dict = Depends(get_current_user)):
     for task in tasks:
         task["_id"] = str(task["_id"])
         task["user_id"] = str(task["user_id"])
+    return tasks
+
+
+@app.get("/tasks/day/{date}", response_model=List[Task])
+def get_tasks_by_day(date: str, current_user: dict = Depends(get_current_user)):
+    # Преобразуем строку даты в объект datetime
+    try:
+        date_obj = datetime.strptime(date, "%Y-%m-%d")
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format")
+
+    # Получение задач для указанного дня
+    tasks = list(tasks_collection.find({
+        "user_id": ObjectId(current_user["_id"]),
+        "date": {"$gte": date_obj, "$lt": date_obj + timedelta(days=1)}
+    }))
+
+    for task in tasks:
+        task["_id"] = str(task["_id"])
+        task["user_id"] = str(task["user_id"])
+
     return tasks
 
 

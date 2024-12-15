@@ -120,3 +120,14 @@ main {
   color: white;
   font-weight: 700;
 }
+
+.add-todo-day-button{
+  display: none;
+  height: 37px;
+  width: 80px;
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
+  border: 3px solid rgb(60,91,120);
+  cursor: pointer;
+  position: relative;
+}
