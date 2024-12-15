@@ -5,11 +5,12 @@ import {
   deleteTaskFromStackList
 } from "./stackList.js";
 
-// Импортируем функции для аутентификации из auth.js
-//import {
-//    loginUser,
-//    getUserById
-//} from './autorizationForm.js';
+import {
+  tasksList, 
+  deleteTaskFromTaskList,
+  addTaskToTaskList,
+  completeTaskInTaskList
+} from "./tasksList.js";
 
 // calendar
 new AirDatepicker('#airdatepicker', {
@@ -161,4 +162,91 @@ inputElement.addEventListener('keydown', (event) => {
       addTaskToStack(newTask);
     }
   }
+});
+
+
+// функции для обычного дня
+const inputTodoDayElements = document.querySelectorAll('.input-todo-day');
+const addTodoDayButtonElements = document.querySelectorAll('.add-todo-day-button');
+
+inputTodoDayElements.forEach((input, index) => {
+  const addButton = addTodoDayButtonElements[index];
+
+  // Показываем кнопку, когда поле ввода получает фокус
+  input.addEventListener('focus', () => {
+    addButton.style.display = 'block';
+  });
+
+  // Скрываем кнопку, если поле ввода пустое и теряет фокус
+  input.addEventListener('blur', () => {
+    if (input.value === '') {
+      addButton.style.display = 'none';
+    }
+  });
+});
+
+function renderTaskList(dayId) {
+  const taskListElement = document.querySelector(`.js-todo-day-list[data-day-id="${dayId}"]`);
+  let html = ``;
+  tasksList.forEach((element) => {
+    if (element.dayId === dayId) {
+      html += `
+        <div class="todo-day-container js-task-in-day" task-id="${element.id}">
+          <div class="task-name" id="taskNameId${element.id}">${element.name}</div>
+          <button class="task-done-button js-task-done-button" task-id="${element.id}">Выполнено</button>
+          <button class="delete-task-button js-delete-task-button" task-id="${element.id}">Удалить</button>
+        </div>
+      `;
+    }
+  });
+  taskListElement.innerHTML = html;
+
+  // Добавляем обработчики событий для кнопок удаления
+  const deleteTaskButtonElements = document.querySelectorAll('.js-delete-task-button');
+  deleteTaskButtonElements.forEach(button => {
+    button.addEventListener('click', (event => {
+      const taskId = Number(event.target.getAttribute('task-id'));
+      removeTaskfromTaskList(taskId);
+    }));
+  });
+
+  // Добавляем обработчики событий для кнопок "Выполнено"
+  const doneTasksButtonElements = document.querySelectorAll('.js-task-done-button');
+  doneTasksButtonElements.forEach(button => {
+    button.addEventListener('click', (event => {
+      const taskId = Number(event.target.getAttribute('task-id'));
+      completeTaskInTaskList(taskId);
+    }));
+  });
+}
+
+addTodoDayButtonElements.forEach(button => {
+  button.addEventListener('click', () => {
+    const inputElement = button.parentElement.querySelector('.input-todo-day');
+    const newTask = inputElement.value;
+    const dayId = button.parentElement.parentElement.parentElement.getAttribute('data-day-id');
+    if (newTask !== '') {
+      addTaskToTaskList(newTask, dayId);
+      inputElement.value = ''; // Очищаем поле ввода
+      button.style.display = 'none'; // Скрываем кнопку после добавления задачи
+    }
+  });
+});
+
+inputTodoDayElements.forEach(input => {
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      const newTask = input.value;
+      const dayId = input.parentElement.parentElement.parentElement.getAttribute('data-day-id');
+      if (newTask !== '') {
+        addTaskToTaskList(newTask, dayId);
+        input.value = ''; // Очищаем поле ввода
+      }
+    }
+  });
+});
+
+document.querySelectorAll('.day-container').forEach(dayContainer => {
+  const dayId = dayContainer.getAttribute('data-day-id');
+  renderTaskList(dayId);
 });
