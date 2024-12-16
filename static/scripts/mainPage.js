@@ -14,7 +14,20 @@ import {
 
 // calendar
 new AirDatepicker('#airdatepicker', {
-  inline: true
+  inline: true,
+  onSelect: function(dateInfo) {
+    const selectedDate = dateInfo.date;
+  const dynamicDaysContainer = document.getElementById('dynamic-days-container');
+  dynamicDaysContainer.innerHTML = ''; // Очищаем контейнер
+  const weekHTML = generateWeek(selectedDate);
+  dynamicDaysContainer.innerHTML = weekHTML; // Добавляем 7 дней
+
+  // После добавления дней, инициализируем рендеринг задач
+  document.querySelectorAll('.day-container').forEach(dayContainer => {
+    const dayId = dayContainer.getAttribute('data-day-id');
+    renderTaskList(dayId);
+  });
+  }
 });
 
 // make a default value of calendar input as a today's date
@@ -175,7 +188,16 @@ const generateDayId = (date) => {
 const generateDayBlock = (date) => {
   const dayId = generateDayId(date);
   const dayOfWeek = new Intl.DateTimeFormat('ru-RU', { weekday: 'long' }).format(date);
-  const formattedDate = new Intl.DateTimeFormat('ru-RU', { month: 'long', day: 'numeric' }).format(date);
+  const dateWithoutYear = new Intl.DateTimeFormat('ru-RU', {
+    month: 'long', 
+    day: 'numeric' 
+  }).format(date);
+  // Форматируем год без "г."
+  const year = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric'
+  }).format(date);
+
+  const formattedDate = `${dateWithoutYear} ${year}`;
 
   return `
     <div class="day-container" data-day-id="${dayId}">
