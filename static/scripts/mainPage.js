@@ -175,7 +175,7 @@ const generateDayId = (date) => {
 const generateDayBlock = (date) => {
   const dayId = generateDayId(date);
   const dayOfWeek = new Intl.DateTimeFormat('ru-RU', { weekday: 'long' }).format(date);
-  const formattedDate = new Intl.DateTimeFormat('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' }).format(date);
+  const formattedDate = new Intl.DateTimeFormat('ru-RU', { month: 'long', day: 'numeric' }).format(date);
 
   return `
     <div class="day-container" data-day-id="${dayId}">
