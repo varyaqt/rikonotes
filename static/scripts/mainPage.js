@@ -137,7 +137,6 @@ inputElement.addEventListener('focus', () => {
   addToStackButtonElement.style.display = 'block';
 });
 
-
 // Показываем изображение, если поле ввода пустое и не в фокусе
 inputElement.addEventListener('blur', () => {
   if (inputElement.value === '') {
@@ -187,18 +186,33 @@ const generateDayBlock = (date) => {
         </div>
         <div class="add-todo-to-day">
           <input class="input-todo-day" type="text" placeholder="Добавить задачу"></input>
-          <img class="add-todo-day-icon" src="../static/icons/add-todo-icon.svg">
-          <button class="add-todo-day-button">
+          <img class="add-todo-day-icon" src="../static/icons/add-todo-icon.svg" style="display: none;">
+          <button class="add-todo-day-button" style="display: none;">
             <img class="add-todo-day-button-icon" src="../static/icons/add-todo-to-stack-icon.svg">
           </button>
         </div>
       </div>
-      <div class="todo-day-list js-todo-day-list">
+      <div class="todo-day-list js-todo-day-list" data-day-id="${dayId}">
         <!-- Здесь будут отображаться задачи -->
       </div>
     </div>
   `;
 };
+
+document.querySelector('main').addEventListener('focusin', (event) => {
+  if (event.target.classList.contains('input-todo-day')) {
+    const addButton = event.target.nextElementSibling; // Кнопка добавления
+    addButton.style.display = 'block'; // Показываем кнопку
+  }
+});
+
+document.querySelector('main').addEventListener('focusout', (event) => {
+  if (event.target.classList.contains('input-todo-day') && event.target.value === '') {
+    const addButton = event.target.nextElementSibling; // Кнопка добавления
+    addButton.style.display = 'none'; // Скрываем кнопку
+  }
+});
+
 
 // Функция для генерации недели (7 дней)
 const generateWeek = (startDate) => {
@@ -244,6 +258,7 @@ document.querySelector('main').addEventListener('click', (event) => {
       addTaskToTaskList(newTask, dayId);
       inputElement.value = ''; // Очищаем поле ввода
       event.target.style.display = 'none'; // Скрываем кнопку после добавления задачи
+      renderTaskList(dayId); // Обновляем список задач для этого дня
     }
   }
 });
@@ -302,4 +317,19 @@ function renderTaskList(dayId) {
 document.querySelectorAll('.day-container').forEach(dayContainer => {
   const dayId = dayContainer.getAttribute('data-day-id');
   renderTaskList(dayId);
+});
+
+// Обработчик событий для полей ввода задач в календаре
+document.querySelectorAll('.input-todo-day').forEach(input => {
+  input.addEventListener('focus', () => {
+    const addButton = input.nextElementSibling; // Предполагаем, что кнопка добавления следует за полем ввода
+    addButton.style.display = 'block';
+  });
+
+  input.addEventListener('blur', () => {
+    if (input.value === '') {
+      const addButton = input.nextElementSibling;
+      addButton.style.display = 'none';
+    }
+  });
 });
