@@ -1,22 +1,24 @@
+import { renderTaskList } from "./mainPage.js";
+
 const today = new Date();
 export let tasksList = [
   {
     id: 1,
     title: 'Помыть посуду',
-    date: new Date(),
-    is_done: false
+    is_done: false,
+    dayId: '2024-12-17'
   },
   {
     id: 2,
     title: 'Сделать домашку',
-    date: today,
-    is_done: false
+    is_done: false,
+    dayId: '2024-12-18'
   },
   {
     id: 3,
     title: 'Помыть посуду',
-    date: today.setDate(today.getDate() + 45),
-    is_done: false
+    is_done: false,
+    dayId: '2024-12-18'
   }
 ];
 
@@ -40,9 +42,8 @@ export function addTaskToTaskList(taskName, dayId) {
   renderTaskList(dayId); // Рендерим список задач для текущего дня
 }
 
-export function removeTaskfromTaskList(taskId) {
+export function removeTaskfromTaskList(taskId, dayId) {
   deleteTaskFromTaskList(taskId);
-  const dayId = tasksList.find(task => task.id === taskId).dayId;
   renderTaskList(dayId);
 }
 

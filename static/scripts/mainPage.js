@@ -9,7 +9,8 @@ import {
   tasksList, 
   deleteTaskFromTaskList,
   addTaskToTaskList,
-  completeTaskInTaskList
+  completeTaskInTaskList,
+  removeTaskfromTaskList
 } from "./tasksList.js";
 
 // calendar
@@ -207,7 +208,7 @@ const generateDayBlock = (date) => {
           <div class="day-of-week">${dayOfWeek}</div>
         </div>
         <div class="add-todo-to-day">
-          <input class="input-todo-day" type="text" placeholder="Добавить задачу"></input>
+          <input class="input-todo-day" type="text" placeholder="Добавить задачу" id=${dayId}></input>
           <img class="add-todo-day-icon" src="../static/icons/add-todo-icon.svg" style="display: none;">
           <button class="add-todo-day-button" style="display: none;">
             <img class="add-todo-day-button-icon" src="../static/icons/add-todo-to-stack-icon.svg">
@@ -221,20 +222,23 @@ const generateDayBlock = (date) => {
   `;
 };
 
-document.querySelector('main').addEventListener('focusin', (event) => {
-  if (event.target.classList.contains('input-todo-day')) {
-    const addButton = event.target.nextElementSibling; // Кнопка добавления
-    addButton.style.display = 'block'; // Показываем кнопку
-  }
-});
 
-document.querySelector('main').addEventListener('focusout', (event) => {
-  if (event.target.classList.contains('input-todo-day') && event.target.value === '') {
-    const addButton = event.target.nextElementSibling; // Кнопка добавления
-    addButton.style.display = 'none'; // Скрываем кнопку
-  }
-});
 
+document.querySelectorAll('.input-todo-day').forEach(inputElement => {
+  inputElement.addEventListener('keydown', (event) => {
+    const newTask = inputElement.value;
+    const dayId = inputElement.id;
+    if (event.key === 'Enter') {
+      const newTask = inputElement.value;
+      console.log(newTask);
+      if (newTask !== '') {
+        addTaskToTaskList(newTask, dayId);
+        inputElement.value = ''; // Очищаем поле ввода
+        renderTaskList(dayId); // Обновляем список задач для этого дня
+      }
+    }
+  });
+});
 
 // Функция для генерации недели (7 дней)
 const generateWeek = (startDate) => {
@@ -268,23 +272,6 @@ const todayDate = new Date();
 const dynamicDaysContainer = document.getElementById('dynamic-days-container');
 dynamicDaysContainer.innerHTML = generateWeek(todayDate);
 
-// Обработчик событий для добавления задач
-document.querySelector('main').addEventListener('click', (event) => {
-  if (event.target.classList.contains('add-todo-day-button')) {
-    const dayContainer = event.target.closest('.day-container');
-    const dayId = dayContainer.getAttribute('data-day-id');
-    const inputElement = dayContainer.querySelector('.input-todo-day');
-    const newTask = inputElement.value;
-
-    if (newTask !== '') {
-      addTaskToTaskList(newTask, dayId);
-      inputElement.value = ''; // Очищаем поле ввода
-      event.target.style.display = 'none'; // Скрываем кнопку после добавления задачи
-      renderTaskList(dayId); // Обновляем список задач для этого дня
-    }
-  }
-});
-
 // Обработчик событий для добавления задач по нажатию Enter
 document.querySelector('main').addEventListener('keydown', (event) => {
   if (event.target.classList.contains('input-todo-day') && event.key === 'Enter') {
@@ -300,16 +287,16 @@ document.querySelector('main').addEventListener('keydown', (event) => {
 });
 
 // Функция для рендеринга задач для указанного дня
-function renderTaskList(dayId) {
+export function renderTaskList(dayId) {
   const taskListElement = document.querySelector(`.js-todo-day-list[data-day-id="${dayId}"]`);
   let html = ``;
   tasksList.forEach((element) => {
     if (element.dayId === dayId) {
       html += `
-        <div class="todo-day-container js-task-in-day" task-id="${element.id}">
+        <div class="todo-day-container js-task-in-day" task-id="${element.id}" day-id="${dayId}">
           <div class="task-name" id="taskNameId${element.id}">${element.name}</div>
-          <button class="task-done-button js-task-done-button" task-id="${element.id}">Выполнено</button>
-          <button class="delete-task-button js-delete-task-button" task-id="${element.id}">Удалить</button>
+          <button class="task-done-button js-task-done-button-day" task-id="${element.id}">Выполнено</button>
+          <button class="delete-task-button js-delete-task-button-day" task-id="${element.id}">Удалить</button>
         </div>
       `;
     }
@@ -317,16 +304,17 @@ function renderTaskList(dayId) {
   taskListElement.innerHTML = html;
 
   // Добавляем обработчики событий для кнопок удаления
-  const deleteTaskButtonElements = taskListElement.querySelectorAll('.js-delete-task-button');
+  const deleteTaskButtonElements = taskListElement.querySelectorAll('.js-delete-task-button-day');
   deleteTaskButtonElements.forEach(button => {
     button.addEventListener('click', (event => {
       const taskId = Number(event.target.getAttribute('task-id'));
-      removeTaskfromTaskList(taskId);
+      const dayId = Number(event.target.getAttribute('day-id'));
+      removeTaskfromTaskList(taskId, dayId);
     }));
   });
 
   // Добавляем обработчики событий для кнопок "Выполнено"
-  const doneTasksButtonElements = taskListElement.querySelectorAll('.js-task-done-button');
+  const doneTasksButtonElements = taskListElement.querySelectorAll('.js-task-done-button-day');
   doneTasksButtonElements.forEach(button => {
     button.addEventListener('click', (event => {
       const taskId = Number(event.target.getAttribute('task-id'));
