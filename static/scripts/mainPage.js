@@ -290,13 +290,7 @@ document.querySelector('main').addEventListener('keydown', (event) => {
 
 // Функция для рендеринга задач для указанного дня
 export function renderTaskList(dayId) {
-  console.log('Rendering tasks for dayId:', dayId); // Логируем, что функция вызывается
   const taskListElement = document.querySelector(`.js-todo-day-list[data-day-id="${dayId}"]`);
-  if (!taskListElement) {
-    console.error(`Element with data-day-id="${dayId}" not found`);
-    return;
-  }
-
   let html = ``;
   tasksList.forEach((element) => {
     if (element.dayId === dayId) {
@@ -310,6 +304,26 @@ export function renderTaskList(dayId) {
     }
   });
   taskListElement.innerHTML = html;
+
+  // Добавляем обработчики событий для кнопок удаления
+  const deleteTaskButtonElements = taskListElement.querySelectorAll('.js-delete-task-button-day');
+  deleteTaskButtonElements.forEach(button => {
+    button.addEventListener('click', (event => {
+      const taskId = Number(event.target.getAttribute('task-id'));
+      const dayId = event.target.closest('.js-task-in-day').getAttribute('day-id');
+      removeTaskfromTaskList(taskId, dayId);
+    }));
+  });
+
+  // Добавляем обработчики событий для кнопок "Выполнено"
+  const doneTasksButtonElements = taskListElement.querySelectorAll('.js-task-done-button-day');
+  doneTasksButtonElements.forEach(button => {
+    button.addEventListener('click', (event => {
+      const taskId = Number(event.target.getAttribute('task-id'));
+      const dayId = event.target.closest('.js-task-in-day').getAttribute('day-id');
+      completeTaskInTaskList(taskId, dayId);
+    }));
+  });
 }
 
 // Инициализация рендеринга задач для всех дней
@@ -332,65 +346,3 @@ document.querySelectorAll('.input-todo-day').forEach(input => {
     }
   });
 });
-
-async function addTaskToDatabase(task) {
-  try {
-    const response = await fetch('/tasks', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}` // Добавляем токен авторизации
-      },
-      body: JSON.stringify(task)
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to add task');
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error adding task:', error);
-  }
-}
-
-async function getTasksFromDatabase() {
-  try {
-    const response = await fetch('/tasks', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}` // Добавляем токен авторизации
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch tasks');
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching tasks:', error);
-  }
-}
-
-async function loadTasksFromDatabase() {
-  const tasks = await getTasksFromDatabase();
-  tasksList = tasks.map(task => ({
-    id: task._id,
-    title: task.title,
-    is_done: task.is_done,
-    dayId: task.date.split('T')[0] // Получаем дату в формате YYYY-MM-DD
-  }));
-
-  // Рендерим задачи для всех дней
-  document.querySelectorAll('.day-container').forEach(dayContainer => {
-    const dayId = dayContainer.getAttribute('data-day-id');
-    renderTaskList(dayId);
-  });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  loadTasksFromDatabase();
-});         
