@@ -340,6 +340,14 @@ document.querySelectorAll('.input-todo-day').forEach(input => {
   });
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+  // Инициализация отображения задач для всех дней
+  document.querySelectorAll('.day-container').forEach(dayContainer => {
+    const dayId = dayContainer.getAttribute('data-day-id');
+    renderTaskList(dayId);
+  });
+});
+
 export async function fetchTasksFromDB(dayId) {
   const token = localStorage.getItem('access_token'); // Получаем токен из localStorage
   const response = await fetch(`http://127.0.0.1:8000/tasks/day/${dayId}`, {
