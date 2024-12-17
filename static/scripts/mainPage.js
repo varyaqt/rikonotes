@@ -346,3 +346,66 @@ document.querySelectorAll('.input-todo-day').forEach(input => {
     }
   });
 });
+
+async function addTaskToDatabase(task) {
+  try {
+    const response = await fetch('/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}` // Добавляем токен авторизации
+      },
+      body: JSON.stringify(task)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add task');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error adding task:', error);
+  }
+}
+
+async function getTasksFromDatabase() {
+  try {
+    const response = await fetch('/tasks', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}` // Добавляем токен авторизации
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch tasks');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching tasks:', error);
+  }
+}
+
+async function loadTasksFromDatabase() {
+  const tasks = await getTasksFromDatabase();
+  tasksList = tasks.map(task => ({
+    id: task._id,
+    title: task.title,
+    is_done: task.is_done,
+    dayId: task.date.split('T')[0] // Получаем дату в формате YYYY-MM-DD
+  }));
+
+  // Рендерим задачи для всех дней
+  document.querySelectorAll('.day-container').forEach(dayContainer => {
+    const dayId = dayContainer.getAttribute('data-day-id');
+    renderTaskList(dayId);
+  });
+}
+
+// Вызываем функцию при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+  loadTasksFromDatabase();
+});

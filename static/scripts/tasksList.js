@@ -1,32 +1,31 @@
 import { renderTaskList } from "./mainPage.js";
-import { stackList } from './stackList.js'
+import { stackList } from './stackList.js';
+import { addTaskToDatabase } from './mainPage.js'; // Импортируем функцию для добавления задачи на бэкенд
 
 export let tasksList = [];
 
-export function deleteTaskFromTaskList(taskId){
+export function deleteTaskFromTaskList(taskId) {
   tasksList = tasksList.filter(task => task.id !== taskId);
 }
 
-export function addTaskToTaskList(taskName, dayId) {
-  let taskId = 0;
-  if (tasksList.length !== 0 && stackList.length !== 0) {
-    taskId = Math.max(Number(tasksList[tasksList.length - 1].id), Number(stackList[0].id)) + 1;
-  } else if (tasksList.length === 0 && stackList.length !== 0) {
-    taskId = Number(stackList[0].id) + 1;
-  } else if (tasksList.length !== 0 && stackList.length === 0) {
-    taskId = Number(tasksList[tasksList.length - 1].id) + 1;
-  } else if (tasksList.length === 0 && stackList.length === 0) {
-    taskId = 1;
-  }
-
+export async function addTaskToTaskList(taskName, dayId) {
   const newTask = {
-    id: taskId,
     title: taskName,
-    is_done: false,
-    dayId: dayId
+    description: '', // Добавьте описание, если нужно
+    user_id: localStorage.getItem('user_id'), // Получаем ID пользователя из localStorage
+    date: new Date(dayId).toISOString(), // Преобразуем дату в формат ISO
+    is_done: false
   };
-  tasksList.push(newTask);
-  renderTaskList(dayId); // Рендерим список задач для текущего дня
+
+  // Отправляем задачу на бэкенд
+  const response = await addTaskToDatabase(newTask);
+
+  if (response && response.task_id) {
+    // Если задача успешно добавлена, обновляем локальный список задач
+    newTask.id = response.task_id;
+    tasksList.push(newTask);
+    renderTaskList(dayId); // Рендерим список задач для текущего дня
+  }
 }
 
 export function removeTaskfromTaskList(taskId, dayId) {
