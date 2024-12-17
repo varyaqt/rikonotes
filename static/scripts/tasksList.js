@@ -7,37 +7,60 @@ export function deleteTaskFromTaskList(taskId){
   tasksList = tasksList.filter(task => task.id !== taskId);
 }
 
-export function addTaskToTaskList(taskName, dayId) {
-  let taskId = 0;
-  if (tasksList.length !== 0 && stackList.length !== 0) {
-    taskId = Math.max(Number(tasksList[tasksList.length - 1].id), Number(stackList[0].id)) + 1;
-  } else if (tasksList.length === 0 && stackList.length !== 0) {
-    taskId = Number(stackList[0].id) + 1;
-  } else if (tasksList.length !== 0 && stackList.length === 0) {
-    taskId = Number(tasksList[tasksList.length - 1].id) + 1;
-  } else if (tasksList.length === 0 && stackList.length === 0) {
-    taskId = 1;
+async function addTaskToTaskList(taskName, dayId) {
+  const response = await fetch('/tasks', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      title: taskName,
+      description: '',
+      user_id: localStorage.getItem('user_id'),
+      date: new Date(dayId).toISOString(),
+      is_done: false,
+    }),
+  });
+
+  if (response.ok) {
+    const newTask = await response.json();
+    renderTaskList(dayId); // Обновляем список задач для текущего дня
+  } else {
+    console.error('Failed to add task');
   }
-
-  const newTask = {
-    id: taskId,
-    title: taskName,
-    is_done: false,
-    dayId: dayId
-  };
-  tasksList.push(newTask);
-  renderTaskList(dayId); // Рендерим список задач для текущего дня
 }
 
-export function removeTaskfromTaskList(taskId, dayId) {
-  deleteTaskFromTaskList(taskId);
-  renderTaskList(dayId);
+async function removeTaskfromTaskList(taskId, dayId) {
+  const response = await fetch(`/tasks/${taskId}`, {
+    method: 'DELETE',
+  });
+
+  if (response.ok) {
+    renderTaskList(dayId); // Обновляем список задач для текущего дня
+  } else {
+    console.error('Failed to delete task');
+  }
 }
 
-export function completeTaskInTaskList(taskId, dayId) {
+async function completeTaskInTaskList(taskId, dayId) {
   const taskNameElement = document.getElementById(`taskNameId${taskId}`);
   taskNameElement.style.textDecoration = 'line-through';
-  setTimeout(() => {
-    removeTaskfromTaskList(taskId, dayId);
-  }, 1000);
+
+  const response = await fetch(`/tasks/${taskId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      is_done: true,
+    }),
+  });
+
+  if (response.ok) {
+    setTimeout(() => {
+      removeTaskfromTaskList(taskId, dayId);
+    }, 1000);
+  } else {
+    console.error('Failed to mark task as completed');
+  }
 }
