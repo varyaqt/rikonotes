@@ -10,6 +10,7 @@ export function deleteTaskFromTaskList(taskId){
 export async function addTaskToTaskList(taskName, dayId) {
   const newTask = {
     title: taskName,
+    description: '',
     user_id: localStorage.getItem('user_id'), // Получаем ID пользователя из localStorage
     date: new Date(dayId).toISOString(), // Преобразуем дату в формат ISO
     is_done: false
