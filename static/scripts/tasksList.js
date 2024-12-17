@@ -7,7 +7,7 @@ export function deleteTaskFromTaskList(taskId){
   tasksList = tasksList.filter(task => task.id !== taskId);
 }
 
-async function addTaskToTaskList(taskName, dayId) {
+export async function addTaskToTaskList(taskName, dayId) {
   const response = await fetch('/tasks', {
     method: 'POST',
     headers: {
@@ -30,7 +30,7 @@ async function addTaskToTaskList(taskName, dayId) {
   }
 }
 
-async function removeTaskfromTaskList(taskId, dayId) {
+export async function removeTaskfromTaskList(taskId, dayId) {
   const response = await fetch(`/tasks/${taskId}`, {
     method: 'DELETE',
   });
@@ -42,7 +42,7 @@ async function removeTaskfromTaskList(taskId, dayId) {
   }
 }
 
-async function completeTaskInTaskList(taskId, dayId) {
+export async function completeTaskInTaskList(taskId, dayId) {
   const taskNameElement = document.getElementById(`taskNameId${taskId}`);
   taskNameElement.style.textDecoration = 'line-through';
 
