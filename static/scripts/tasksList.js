@@ -8,13 +8,16 @@ export function deleteTaskFromTaskList(taskId){
 }
 
 export async function addTaskToTaskList(taskName, dayId) {
+  const token = localStorage.getItem('access_token'); // Получаем токен из localStorage
   const response = await fetch('http://127.0.0.1:8000/tasks', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`, // Передаем токен в заголовках
     },
     body: JSON.stringify({
       title: taskName,
+      description: '',
       user_id: localStorage.getItem('user_id'),
       date: new Date(dayId).toISOString(),
       is_done: false,
@@ -25,13 +28,18 @@ export async function addTaskToTaskList(taskName, dayId) {
     const newTask = await response.json();
     renderTaskList(dayId); // Обновляем список задач для текущего дня
   } else {
-    console.error('Failed to add task');
+    const errorData = await response.json(); // Получаем детали ошибки
+    console.error('Failed to add task:', errorData);
   }
 }
 
 export async function removeTaskfromTaskList(taskId, dayId) {
-  const response = await fetch(`/tasks/${taskId}`, {
+  const token = localStorage.getItem('access_token'); // Получаем токен из localStorage
+  const response = await fetch(`http://127.0.0.1:8000/tasks/${taskId}`, {
     method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`, // Передаем токен в заголовках
+    },
   });
 
   if (response.ok) {
@@ -42,13 +50,15 @@ export async function removeTaskfromTaskList(taskId, dayId) {
 }
 
 export async function completeTaskInTaskList(taskId, dayId) {
+  const token = localStorage.getItem('access_token'); // Получаем токен из localStorage
   const taskNameElement = document.getElementById(`taskNameId${taskId}`);
   taskNameElement.style.textDecoration = 'line-through';
 
-  const response = await fetch(`/tasks/${taskId}`, {
+  const response = await fetch(`http://127.0.0.1:8000/tasks/${taskId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`, // Передаем токен в заголовках
     },
     body: JSON.stringify({
       is_done: true,

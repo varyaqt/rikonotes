@@ -340,8 +340,13 @@ document.querySelectorAll('.input-todo-day').forEach(input => {
   });
 });
 
-async function fetchTasksFromDB(dayId) {
-  const response = await fetch(`/tasks/day/${dayId}`);
+export async function fetchTasksFromDB(dayId) {
+  const token = localStorage.getItem('access_token'); // Получаем токен из localStorage
+  const response = await fetch(`http://127.0.0.1:8000/tasks/day/${dayId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`, // Передаем токен в заголовках
+    },
+  });
   if (response.ok) {
     const tasks = await response.json();
     return tasks;
