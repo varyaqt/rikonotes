@@ -1,26 +1,6 @@
 import { renderTaskList } from "./mainPage.js";
 
-const today = new Date();
-export let tasksList = [
-  {
-    id: 1,
-    title: 'Помыть посуду',
-    is_done: false,
-    dayId: '2024-12-17'
-  },
-  {
-    id: 2,
-    title: 'Сделать домашку',
-    is_done: false,
-    dayId: '2024-12-18'
-  },
-  {
-    id: 3,
-    title: 'Помыть посуду',
-    is_done: false,
-    dayId: '2024-12-18'
-  }
-];
+export let tasksList = [];
 
 export function deleteTaskFromTaskList(taskId){
   tasksList = tasksList.filter(task => task.id !== taskId);
@@ -50,9 +30,8 @@ export function removeTaskfromTaskList(taskId, dayId) {
 
 export function completeTaskInTaskList(taskId, dayId) {
   const taskNameElement = document.getElementById(`taskNameId${taskId}`);
-  console.log(taskNameElement);
   taskNameElement.style.textDecoration = 'line-through';
   setTimeout(() => {
-    removeTaskfromTaskList(taskId, );
+    removeTaskfromTaskList(taskId, dayId);
   }, 1000);
 }

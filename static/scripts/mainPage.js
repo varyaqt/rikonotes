@@ -6,8 +6,7 @@ import {
 } from "./stackList.js";
 
 import {
-  tasksList, 
-  deleteTaskFromTaskList,
+  tasksList,
   addTaskToTaskList,
   completeTaskInTaskList,
   removeTaskfromTaskList
@@ -82,7 +81,7 @@ function renderStackList() {
   stackList.forEach((element) => {
     html += `
       <div class="todo-container-stack js-task-in-stack" task-id="${element.id}">
-        <div class="task-name" id="taskNameId${element.id}">${element.name}</div>
+        <div class="task-name" id="stackTaskNameId${element.id}">${element.name}</div>
         <button class="task-done-button js-task-done-button" task-id="${element.id}">Выполнено</button>
         <button class="delete-task-button js-delete-task-button" task-id="${element.id}">Удалить</button>
       </div>
@@ -137,7 +136,7 @@ function removeTaskfromStack(taskId) {
 
 // пометка задачи как выполненной в стеке
 function completeTaskInStack(taskId) {
-  const taskNameElement = document.getElementById(`taskNameId${taskId}`);
+  const taskNameElement = document.getElementById(`stackTaskNameId${taskId}`);
   taskNameElement.style.textDecoration = 'line-through';
   setTimeout(() => {
     removeTaskfromStack(taskId);
