@@ -215,9 +215,7 @@ const generateDayBlock = (date) => {
           </button>
         </div>
       </div>
-      <div class="todo-day-list js-todo-day-list" data-day-id="${dayId}">
-        <!-- Здесь будут отображаться задачи -->
-      </div>
+      <div class="todo-day-list js-todo-day-list" data-day-id="${dayId}"></div>
     </div>
   `;
 };
@@ -294,7 +292,7 @@ export function renderTaskList(dayId) {
     if (element.dayId === dayId) {
       html += `
         <div class="todo-day-container js-task-in-day" task-id="${element.id}" day-id="${dayId}">
-          <div class="task-name" id="taskNameId${element.id}">${element.name}</div>
+          <div class="task-name" id="taskNameId${element.id}">${element.title}</div>
           <button class="task-done-button js-task-done-button-day" task-id="${element.id}">Выполнено</button>
           <button class="delete-task-button js-delete-task-button-day" task-id="${element.id}">Удалить</button>
         </div>
@@ -308,7 +306,7 @@ export function renderTaskList(dayId) {
   deleteTaskButtonElements.forEach(button => {
     button.addEventListener('click', (event => {
       const taskId = Number(event.target.getAttribute('task-id'));
-      const dayId = Number(event.target.getAttribute('day-id'));
+      const dayId = event.target.closest('.js-task-in-day').getAttribute('day-id');
       removeTaskfromTaskList(taskId, dayId);
     }));
   });
@@ -318,7 +316,8 @@ export function renderTaskList(dayId) {
   doneTasksButtonElements.forEach(button => {
     button.addEventListener('click', (event => {
       const taskId = Number(event.target.getAttribute('task-id'));
-      completeTaskInTaskList(taskId);
+      const dayId = event.target.closest('.js-task-in-day').getAttribute('day-id');
+      completeTaskInTaskList(taskId, dayId);
     }));
   });
 }

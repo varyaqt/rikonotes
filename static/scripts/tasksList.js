@@ -35,7 +35,8 @@ export function addTaskToTaskList(taskName, dayId) {
   }
   const newTask = {
     id: taskId,
-    name: taskName,
+    title: taskName,
+    is_done: false,
     dayId: dayId
   };
   tasksList.push(newTask);
@@ -47,10 +48,11 @@ export function removeTaskfromTaskList(taskId, dayId) {
   renderTaskList(dayId);
 }
 
-export function completeTaskInTaskList(taskId) {
+export function completeTaskInTaskList(taskId, dayId) {
   const taskNameElement = document.getElementById(`taskNameId${taskId}`);
+  console.log(taskNameElement);
   taskNameElement.style.textDecoration = 'line-through';
   setTimeout(() => {
-    removeTaskfromTaskList(taskId);
+    removeTaskfromTaskList(taskId, );
   }, 1000);
 }
