@@ -7,80 +7,37 @@ export function deleteTaskFromTaskList(taskId){
   tasksList = tasksList.filter(task => task.id !== taskId);
 }
 
-export async function addTaskToTaskList(taskName, dayId) {
-  const user_id = localStorage.getItem('user_id'); // Предполагаем, что user_id сохранен в localStorage
-  const taskData = {
+export function addTaskToTaskList(taskName, dayId) {
+  let taskId = 0;
+  if (tasksList.length !== 0 && stackList.length !== 0) {
+    taskId = Math.max(Number(tasksList[tasksList.length - 1].id), Number(stackList[0].id)) + 1;
+  } else if (tasksList.length === 0 && stackList.length !== 0) {
+    taskId = Number(stackList[0].id) + 1;
+  } else if (tasksList.length !== 0 && stackList.length === 0) {
+    taskId = Number(tasksList[tasksList.length - 1].id) + 1;
+  } else if (tasksList.length === 0 && stackList.length === 0) {
+    taskId = 1;
+  }
+
+  const newTask = {
+    id: taskId,
     title: taskName,
-    description: 'Описание задачи', // Добавьте описание, если нужно
-    user_id: user_id,
-    date: new Date(dayId).toISOString(), // Преобразуем dayId в формат даты
-    is_done: false
+    is_done: false,
+    dayId: dayId
   };
-
-  try {
-    const response = await fetch('/tasks', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}` // Добавляем токен авторизации
-      },
-      body: JSON.stringify(taskData)
-    });
-
-    if (response.ok) {
-      const newTask = await response.json();
-      tasksList.push(newTask); // Добавляем задачу в локальный список
-      renderTaskList(dayId); // Рендерим список задач для текущего дня
-    } else {
-      console.error('Ошибка при добавлении задачи');
-    }
-  } catch (error) {
-    console.error('Ошибка сети:', error);
-  }
+  tasksList.push(newTask);
+  renderTaskList(dayId); // Рендерим список задач для текущего дня
 }
 
-export async function removeTaskfromTaskList(taskId, dayId) {
-  try {
-    const response = await fetch(`/tasks/${taskId}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}` // Добавляем токен авторизации
-      }
-    });
-
-    if (response.ok) {
-      deleteTaskFromTaskList(taskId); // Удаляем задачу из локального списка
-      renderTaskList(dayId); // Рендерим список задач для текущего дня
-    } else {
-      console.error('Ошибка при удалении задачи');
-    }
-  } catch (error) {
-    console.error('Ошибка сети:', error);
-  }
+export function removeTaskfromTaskList(taskId, dayId) {
+  deleteTaskFromTaskList(taskId);
+  renderTaskList(dayId);
 }
 
-export async function completeTaskInTaskList(taskId, dayId) {
+export function completeTaskInTaskList(taskId, dayId) {
   const taskNameElement = document.getElementById(`taskNameId${taskId}`);
   taskNameElement.style.textDecoration = 'line-through';
-
-  try {
-    const response = await fetch(`/tasks/${taskId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}` // Добавляем токен авторизации
-      },
-      body: JSON.stringify({ is_done: true })
-    });
-
-    if (response.ok) {
-      setTimeout(() => {
-        removeTaskfromTaskList(taskId, dayId); // Удаляем задачу из локального списка
-      }, 1000);
-    } else {
-      console.error('Ошибка при обновлении задачи');
-    }
-  } catch (error) {
-    console.error('Ошибка сети:', error);
-  }
+  setTimeout(() => {
+    removeTaskfromTaskList(taskId, dayId);
+  }, 1000);
 }
