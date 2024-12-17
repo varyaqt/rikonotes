@@ -1,4 +1,5 @@
 import { renderTaskList } from "./mainPage.js";
+import { stackList } from './stackList.js'
 
 export let tasksList = [];
 
@@ -8,11 +9,16 @@ export function deleteTaskFromTaskList(taskId){
 
 export function addTaskToTaskList(taskName, dayId) {
   let taskId = 0;
-  if (tasksList.length !== 0) {
+  if (tasksList.length !== 0 && stackList.length !== 0) {
+    taskId = Math.max(Number(tasksList[tasksList.length - 1].id), Number(stackList[0].id)) + 1;
+  } else if (tasksList.length === 0 && stackList.length !== 0) {
+    taskId = Number(stackList[0].id) + 1;
+  } else if (tasksList.length !== 0 && stackList.length === 0) {
     taskId = Number(tasksList[tasksList.length - 1].id) + 1;
-  } else {
+  } else if (tasksList.length === 0 && stackList.length === 0) {
     taskId = 1;
   }
+
   const newTask = {
     id: taskId,
     title: taskName,

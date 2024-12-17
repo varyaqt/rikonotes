@@ -81,7 +81,7 @@ function renderStackList() {
   stackList.forEach((element) => {
     html += `
       <div class="todo-container-stack js-task-in-stack" task-id="${element.id}">
-        <div class="task-name" id="stackTaskNameId${element.id}">${element.name}</div>
+        <div class="task-name" id="taskNameId${element.id}">${element.name}</div>
         <button class="task-done-button js-task-done-button" task-id="${element.id}">Выполнено</button>
         <button class="delete-task-button js-delete-task-button" task-id="${element.id}">Удалить</button>
       </div>
@@ -114,11 +114,16 @@ function renderStackList() {
 // добавление новой задачи в стек
 function addTaskToStack(taskName) {
   let taskId = 0;
-  if (stackList.length !== 0) {
+  if (tasksList.length !== 0 && stackList.length !== 0) {
+    taskId = Math.max(Number(tasksList[tasksList.length - 1].id), Number(stackList[0].id)) + 1;
+  } else if (tasksList.length === 0 && stackList.length !== 0) {
     taskId = Number(stackList[0].id) + 1;
-  } else if (stackList.length === 0) {
+  } else if (tasksList.length !== 0 && stackList.length === 0) {
+    taskId = Number(tasksList[tasksList.length - 1].id) + 1;
+  } else if (tasksList.length === 0 && stackList.length === 0) {
     taskId = 1;
   }
+
   const newTask = {
     id: taskId,
     name: taskName
@@ -136,7 +141,7 @@ function removeTaskfromStack(taskId) {
 
 // пометка задачи как выполненной в стеке
 function completeTaskInStack(taskId) {
-  const taskNameElement = document.getElementById(`stackTaskNameId${taskId}`);
+  const taskNameElement = document.getElementById(`taskNameId${taskId}`);
   taskNameElement.style.textDecoration = 'line-through';
   setTimeout(() => {
     removeTaskfromStack(taskId);
