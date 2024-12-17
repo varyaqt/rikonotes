@@ -8,14 +8,13 @@ export function deleteTaskFromTaskList(taskId){
 }
 
 export async function addTaskToTaskList(taskName, dayId) {
-  const response = await fetch('/tasks', {
+  const response = await fetch('http://127.0.0.1:8000/tasks', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       title: taskName,
-      description: '',
       user_id: localStorage.getItem('user_id'),
       date: new Date(dayId).toISOString(),
       is_done: false,

@@ -130,6 +130,8 @@ def register_user(user: User):
     return {"message": "User registered successfully", "user_id": str(result.inserted_id)}
 
 
+
+
 @app.get("/main", response_class=HTMLResponse)
 async def get_start_page():
     with open("templates/main-page.html", "r", encoding="utf-8") as file:
@@ -164,13 +166,17 @@ async def get_login_page():
     return HTMLResponse(content=html_content)
 
 
-@app.post("/tasks")
+@app.post("/tasks", response_model=Task)
 def create_task(task: Task, current_user: dict = Depends(get_current_user)):
     # Сохранение задачи в MongoDB
     task_data = task.model_dump()
     task_data["user_id"] = ObjectId(current_user["_id"])  # Используем текущего пользователя
     result = tasks_collection.insert_one(task_data)
-    return {"message": "Task created successfully", "task_id": str(result.inserted_id)}
+    if result.inserted_id:
+        task_data["_id"] = str(result.inserted_id)
+        task_data["user_id"] = str(task_data["user_id"])
+        return task_data
+    raise HTTPException(status_code=500, detail="Failed to create task")
 
 
 @app.get("/tasks", response_model=List[Task])
@@ -227,6 +233,7 @@ def update_task(task_id: str, task: Task, current_user: dict = Depends(get_curre
         task_data["user_id"] = str(task_data["user_id"])
         return task_data
     raise HTTPException(status_code=404, detail="Task not found")
+
 
 
 @app.delete("/tasks/{task_id}")
