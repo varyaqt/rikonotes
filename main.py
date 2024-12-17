@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 from bson import ObjectId
@@ -47,11 +47,14 @@ class TokenData(BaseModel):
 
 
 class Task(BaseModel):
+    id: str = Field(alias="_id")  # Используем alias для _id
     title: str
-    description: str
-    user_id: str  # Ссылка на пользователя, которому принадлежит задача
+    user_id: str
     date: datetime
     is_done: bool = False
+
+    class Config:
+        allow_population_by_field_name = True
 
 
 # Вспомогательные функции
@@ -184,27 +187,25 @@ def get_tasks(current_user: dict = Depends(get_current_user)):
     # Получение всех задач текущего пользователя из MongoDB
     tasks = list(tasks_collection.find({"user_id": ObjectId(current_user["_id"])}))
     for task in tasks:
-        task["_id"] = str(task["_id"])
+        task["_id"] = str(task["_id"])  # Преобразуем ObjectId в строку
         task["user_id"] = str(task["user_id"])
     return tasks
 
 
 @app.get("/tasks/day/{date}", response_model=List[Task])
 def get_tasks_by_day(date: str, current_user: dict = Depends(get_current_user)):
-    # Преобразуем строку даты в объект datetime
     try:
         date_obj = datetime.strptime(date, "%Y-%m-%d")
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid date format")
 
-    # Получение задач для указанного дня
     tasks = list(tasks_collection.find({
         "user_id": ObjectId(current_user["_id"]),
         "date": {"$gte": date_obj, "$lt": date_obj + timedelta(days=1)}
     }))
 
     for task in tasks:
-        task["_id"] = str(task["_id"])
+        task["_id"] = str(task["_id"])  # Преобразуем ObjectId в строку
         task["user_id"] = str(task["user_id"])
 
     return tasks
