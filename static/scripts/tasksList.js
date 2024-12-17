@@ -23,7 +23,10 @@ export async function addTaskToTaskList(taskName, dayId) {
     // Если задача успешно добавлена, обновляем локальный список задач
     newTask.id = response.task_id;
     tasksList.push(newTask);
+    console.log('Task added to tasksList:', tasksList); // Логируем обновленный список
     renderTaskList(dayId); // Рендерим список задач для текущего дня
+  } else {
+    console.error('Failed to add task to tasksList');
   }
 }
 

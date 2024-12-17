@@ -290,7 +290,13 @@ document.querySelector('main').addEventListener('keydown', (event) => {
 
 // Функция для рендеринга задач для указанного дня
 export function renderTaskList(dayId) {
+  console.log('Rendering tasks for dayId:', dayId); // Логируем, что функция вызывается
   const taskListElement = document.querySelector(`.js-todo-day-list[data-day-id="${dayId}"]`);
+  if (!taskListElement) {
+    console.error(`Element with data-day-id="${dayId}" not found`);
+    return;
+  }
+
   let html = ``;
   tasksList.forEach((element) => {
     if (element.dayId === dayId) {
@@ -304,26 +310,6 @@ export function renderTaskList(dayId) {
     }
   });
   taskListElement.innerHTML = html;
-
-  // Добавляем обработчики событий для кнопок удаления
-  const deleteTaskButtonElements = taskListElement.querySelectorAll('.js-delete-task-button-day');
-  deleteTaskButtonElements.forEach(button => {
-    button.addEventListener('click', (event => {
-      const taskId = Number(event.target.getAttribute('task-id'));
-      const dayId = event.target.closest('.js-task-in-day').getAttribute('day-id');
-      removeTaskfromTaskList(taskId, dayId);
-    }));
-  });
-
-  // Добавляем обработчики событий для кнопок "Выполнено"
-  const doneTasksButtonElements = taskListElement.querySelectorAll('.js-task-done-button-day');
-  doneTasksButtonElements.forEach(button => {
-    button.addEventListener('click', (event => {
-      const taskId = Number(event.target.getAttribute('task-id'));
-      const dayId = event.target.closest('.js-task-in-day').getAttribute('day-id');
-      completeTaskInTaskList(taskId, dayId);
-    }));
-  });
 }
 
 // Инициализация рендеринга задач для всех дней
