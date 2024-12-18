@@ -17,6 +17,7 @@ export async function addTaskToTaskList(taskName, dayId) {
     },
     body: JSON.stringify({
       title: taskName,
+      description: '',
       user_id: localStorage.getItem('user_id'),
       date: new Date(dayId).toISOString(),
       is_done: false,

@@ -294,11 +294,6 @@ export async function renderTaskList(dayId) {
   const tasks = await fetchTasksFromDB(dayId);
   let html = ``;
   tasks.forEach((element) => {
-    if (!element._id) {
-      console.error('Task ID is missing in the response:', element);
-      return;
-    }
-
     html += `
       <div class="todo-day-container js-task-in-day" task-id="${element._id}" day-id="${dayId}">
         <div class="task-name" id="taskNameId${element._id}">${element.title}</div>
@@ -315,7 +310,6 @@ export async function renderTaskList(dayId) {
     button.addEventListener('click', (event => {
       const taskId = event.target.getAttribute('task-id');
       const dayId = event.target.closest('.js-task-in-day').getAttribute('day-id');
-      console.log(taskId);
       removeTaskfromTaskList(taskId, dayId);
     }));
   });
@@ -363,7 +357,6 @@ export async function fetchTasksFromDB(dayId) {
   });
   if (response.ok) {
     const tasks = await response.json();
-    // console.log(tasks); // Проверьте, что tasks содержит корректные данные
     return tasks;
   } else {
     console.error('Failed to fetch tasks');
