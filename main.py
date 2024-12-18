@@ -168,12 +168,11 @@ async def get_login_page():
 
 @app.post("/tasks", response_model=Task)
 def create_task(task: Task, current_user: dict = Depends(get_current_user)):
-    # Сохранение задачи в MongoDB
     task_data = task.model_dump()
-    task_data["user_id"] = ObjectId(current_user["_id"])  # Используем текущего пользователя
+    task_data["user_id"] = ObjectId(current_user["_id"])
     result = tasks_collection.insert_one(task_data)
     if result.inserted_id:
-        task_data["_id"] = str(result.inserted_id)
+        task_data["_id"] = str(result.inserted_id)  # Убедитесь, что _id возвращается как строка
         task_data["user_id"] = str(task_data["user_id"])
         return task_data
     raise HTTPException(status_code=500, detail="Failed to create task")
@@ -191,20 +190,18 @@ def get_tasks(current_user: dict = Depends(get_current_user)):
 
 @app.get("/tasks/day/{date}", response_model=List[Task])
 def get_tasks_by_day(date: str, current_user: dict = Depends(get_current_user)):
-    # Преобразуем строку даты в объект datetime
     try:
         date_obj = datetime.strptime(date, "%Y-%m-%d")
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid date format")
 
-    # Получение задач для указанного дня
     tasks = list(tasks_collection.find({
         "user_id": ObjectId(current_user["_id"]),
         "date": {"$gte": date_obj, "$lt": date_obj + timedelta(days=1)}
     }))
 
     for task in tasks:
-        task["_id"] = str(task["_id"])
+        task["_id"] = str(task["_id"])  # Преобразуем _id в строку
         task["user_id"] = str(task["user_id"])
 
     return tasks

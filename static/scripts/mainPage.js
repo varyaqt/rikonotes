@@ -307,21 +307,21 @@ export async function renderTaskList(dayId) {
   // Добавляем обработчики событий для кнопок удаления
   const deleteTaskButtonElements = taskListElement.querySelectorAll('.js-delete-task-button-day');
   deleteTaskButtonElements.forEach(button => {
-    button.addEventListener('click', (event => {
+    button.addEventListener('click', (event) => {
       const taskId = event.target.getAttribute('task-id');
       const dayId = event.target.closest('.js-task-in-day').getAttribute('day-id');
       removeTaskfromTaskList(taskId, dayId);
-    }));
+    });
   });
 
   // Добавляем обработчики событий для кнопок "Выполнено"
   const doneTasksButtonElements = taskListElement.querySelectorAll('.js-task-done-button-day');
   doneTasksButtonElements.forEach(button => {
-    button.addEventListener('click', (event => {
+    button.addEventListener('click', (event) => {
       const taskId = event.target.getAttribute('task-id');
       const dayId = event.target.closest('.js-task-in-day').getAttribute('day-id');
       completeTaskInTaskList(taskId, dayId);
-    }));
+    });
   });
 }
 
@@ -349,14 +349,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 export async function fetchTasksFromDB(dayId) {
-  const token = localStorage.getItem('access_token'); // Получаем токен из localStorage
+  const token = localStorage.getItem('access_token');
   const response = await fetch(`http://127.0.0.1:8000/tasks/day/${dayId}`, {
     headers: {
-      'Authorization': `Bearer ${token}`, // Передаем токен в заголовках
+      'Authorization': `Bearer ${token}`,
     },
   });
   if (response.ok) {
     const tasks = await response.json();
+    console.log('Fetched tasks:', tasks);  // Логируем полученные задачи
     return tasks;
   } else {
     console.error('Failed to fetch tasks');
