@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 from bson import ObjectId
@@ -47,12 +47,15 @@ class TokenData(BaseModel):
 
 
 class Task(BaseModel):
+    id: Optional[str] = Field(default=None, alias="_id")  # Опциональное поле для _id
     title: str
-    description: str
-    user_id: str  # Ссылка на пользователя, которому принадлежит задача
+    description: Optional[str] = None  # Сделаем описание необязательным
+    user_id: str
     date: datetime
     is_done: bool = False
 
+    class Config:
+        allow_population_by_field_name = True  # Позволяет работать с _id как id
 
 # Вспомогательные функции
 def verify_password(plain_password, hashed_password):
@@ -110,7 +113,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 
-# Эндпоинты
+#Эндпоинты
 @app.get("/register", response_class=HTMLResponse)
 async def get_registration_page():
     with open("templates/registration.html", "r", encoding="utf-8") as file:
