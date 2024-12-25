@@ -19,6 +19,7 @@ db = cluster["test"]
 users_collection = db['users']
 tasks_collection = db['tasks']
 
+
 # Секретный ключ для JWT
 SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
