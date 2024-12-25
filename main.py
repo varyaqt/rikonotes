@@ -9,14 +9,8 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from starlette.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-import logging
-
-logging.basicConfig(level=logging.DEBUG)  # Уровень логирования - DEBUG
-logger = logging.getLogger(__name__)  # Получаем логгер для текущего модуля
 
 app = FastAPI(title="RIKONOTES", description="Your personal task destroyer С:")
-
-
 
 # Подключение к MongoDB
 cluster = MongoClient(
@@ -24,7 +18,6 @@ cluster = MongoClient(
 db = cluster["test"]
 users_collection = db['users']
 tasks_collection = db['tasks']
-
 
 # Секретный ключ для JWT
 SECRET_KEY = "your-secret-key"
@@ -177,10 +170,6 @@ async def get_login_page():
 def create_task(task: Task, current_user: dict = Depends(get_current_user)):
     task_data = task.model_dump()
     task_data["user_id"] = ObjectId(current_user["_id"])
-
-    # Логирование данных задачи
-    logger.debug(f"Creating task: {task_data}")  # Логирование структуры задачи
-
     result = tasks_collection.insert_one(task_data)
     if result.inserted_id:
         task_data["_id"] = str(result.inserted_id)  # Убедитесь, что _id возвращается как строка
@@ -231,12 +220,9 @@ def get_task(task_id: str, current_user: dict = Depends(get_current_user)):
 
 @app.put("/tasks/{task_id}", response_model=Task)
 def update_task(task_id: str, task: Task, current_user: dict = Depends(get_current_user)):
+    # Обновление задачи в MongoDB
     task_data = task.model_dump()
     task_data["user_id"] = ObjectId(current_user["_id"])  # Используем текущего пользователя
-
-    # Логирование данных задачи
-    logger.debug(f"Updating task {task_id}: {task_data}")  # Логирование структуры задачи
-
     result = tasks_collection.update_one({"_id": ObjectId(task_id), "user_id": ObjectId(current_user["_id"])},
                                          {"$set": task_data})
     if result.modified_count == 1:
@@ -249,11 +235,7 @@ def update_task(task_id: str, task: Task, current_user: dict = Depends(get_curre
 
 @app.delete("/tasks/{task_id}")
 def delete_task(task_id: str, current_user: dict = Depends(get_current_user)):
-    # Логирование задачи перед удалением
-    task = tasks_collection.find_one({"_id": ObjectId(task_id), "user_id": ObjectId(current_user["_id"])})
-    if task:
-        logger.debug(f"Deleting task {task_id}: {task}")  # Логирование структуры задачи
-
+    # Удаление задачи из MongoDB
     result = tasks_collection.delete_one({"_id": ObjectId(task_id), "user_id": ObjectId(current_user["_id"])})
     if result.deleted_count == 1:
         return {"message": "Task deleted successfully"}

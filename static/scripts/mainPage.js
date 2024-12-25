@@ -17,17 +17,16 @@ new AirDatepicker('#airdatepicker', {
   inline: true,
   onSelect: function(dateInfo) {
     const selectedDate = dateInfo.date;
-    const dynamicDaysContainer = document.getElementById('dynamic-days-container');
-    dynamicDaysContainer.innerHTML = ''; // Очищаем контейнер
-    const weekHTML = generateWeek(selectedDate);
-    dynamicDaysContainer.innerHTML = weekHTML; // Добавляем 7 дней
+  const dynamicDaysContainer = document.getElementById('dynamic-days-container');
+  dynamicDaysContainer.innerHTML = ''; // Очищаем контейнер
+  const weekHTML = generateWeek(selectedDate);
+  dynamicDaysContainer.innerHTML = weekHTML; // Добавляем 7 дней
 
-    // После добавления дней, инициализируем рендеринг задач
-    document.querySelectorAll('.day-container').forEach(dayContainer => {
-      const dayId = dayContainer.getAttribute('data-day-id');
-      renderTaskList(dayId);
-    });
-    console.debug(`Generated week for selected date: ${selectedDate}`);
+  // После добавления дней, инициализируем рендеринг задач
+  document.querySelectorAll('.day-container').forEach(dayContainer => {
+    const dayId = dayContainer.getAttribute('data-day-id');
+    renderTaskList(dayId);
+  });
   }
 });
 
@@ -98,7 +97,6 @@ function renderStackList() {
   deleteTaskButtonElements.forEach(button => {
     button.addEventListener('click', (event => {
       const taskId = Number(event.target.getAttribute('task-id'));
-      console.debug(`Deleting task with ID: ${taskId} from stack`);  // Логируем удаление задачи из стека
       removeTaskfromStack(taskId);
     }));
   });
@@ -108,7 +106,6 @@ function renderStackList() {
   doneTasksButtonElements.forEach(button => {
     button.addEventListener('click', (event => {
       const taskId = Number(event.target.getAttribute('task-id'));
-      console.debug(`Marking task with ID: ${taskId} as completed in stack`);  // Логируем выполнение задачи в стеке
       completeTaskInStack(taskId);
     }));
   });
@@ -132,14 +129,12 @@ function addTaskToStack(taskName) {
     name: taskName
   };
   stackList.push(newTask);
-  console.debug("Task added to stack:", newTask);  // Логируем добавление задачи в стек
   renderStackList();
   inputElement.value = '';
 }
 
 // удаление задачи из стека
 function removeTaskfromStack(taskId) {
-  console.debug(`Removing task with ID: ${taskId} from stack`);  // Логируем удаление задачи
   deleteTaskFromStackList(taskId);
   renderStackList();
 }
@@ -148,7 +143,6 @@ function removeTaskfromStack(taskId) {
 function completeTaskInStack(taskId) {
   const taskNameElement = document.getElementById(`taskNameId${taskId}`);
   taskNameElement.style.textDecoration = 'line-through';
-  console.debug(`Marking task with ID: ${taskId} as completed`);  // Логируем выполнение задачи
   setTimeout(() => {
     removeTaskfromStack(taskId);
   }, 1000);
@@ -220,34 +214,84 @@ const generateDayBlock = (date) => {
         <div class="add-todo-to-day">
           <input class="input-todo-day" type="text" placeholder="Добавить задачу" id=${dayId}></input>
           <img class="add-todo-day-icon" src="../static/icons/add-todo-icon.svg" style="display: none;">
-          <button class="add-todo-day-btn">+</button>
+          <button class="add-todo-day-button" style="display: none;">
+            <img class="add-todo-day-button-icon" src="../static/icons/add-todo-to-stack-icon.svg">
+          </button>
         </div>
       </div>
-      <div class="todo-day-list js-todo-day-list" data-day-id="${dayId}">
-      </div>
+      <div class="todo-day-list js-todo-day-list" data-day-id="${dayId}"></div>
     </div>
   `;
 };
 
-// Отображаем неделю на основе выбранной даты
-const generateWeek = (startDate) => {
-  const startOfWeek = new Date(startDate);
-  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());  // начнем с понедельника
 
-  let daysHTML = '';
+
+document.querySelectorAll('.input-todo-day').forEach(inputElement => {
+  inputElement.addEventListener('keydown', (event) => {
+    const newTask = inputElement.value;
+    const dayId = inputElement.id;
+    if (event.key === 'Enter') {
+      const newTask = inputElement.value;
+      console.log(newTask);
+      if (newTask !== '') {
+        addTaskToTaskList(newTask, dayId);
+        inputElement.value = ''; // Очищаем поле ввода
+        renderTaskList(dayId); // Обновляем список задач для этого дня
+      }
+    }
+  });
+});
+
+// Функция для генерации недели (7 дней)
+const generateWeek = (startDate) => {
+  let weekHTML = '';
   for (let i = 0; i < 7; i++) {
-    const day = new Date(startOfWeek);
-    day.setDate(startOfWeek.getDate() + i);
-    daysHTML += generateDayBlock(day);
+    const currentDate = new Date(startDate);
+    currentDate.setDate(startDate.getDate() + i);
+    weekHTML += generateDayBlock(currentDate);
   }
-  return daysHTML;
+  return weekHTML;
 };
 
-// Рендер задач для дня
+// Обработчик событий для календаря
+const calendar = document.getElementById('airdatepicker');
+calendar.addEventListener('change', (event) => {
+  const selectedDate = new Date(event.target.value);
+  const dynamicDaysContainer = document.getElementById('dynamic-days-container');
+  dynamicDaysContainer.innerHTML = ''; // Очищаем контейнер
+  const weekHTML = generateWeek(selectedDate);
+  dynamicDaysContainer.innerHTML = weekHTML; // Добавляем 7 дней
+
+  // После добавления дней, инициализируем рендеринг задач
+  document.querySelectorAll('.day-container').forEach(dayContainer => {
+    const dayId = dayContainer.getAttribute('data-day-id');
+    renderTaskList(dayId);
+  });
+});
+
+// Инициализация: генерируем 7 дней для текущей даты
+const todayDate = new Date();
+const dynamicDaysContainer = document.getElementById('dynamic-days-container');
+dynamicDaysContainer.innerHTML = generateWeek(todayDate);
+
+// Обработчик событий для добавления задач по нажатию Enter
+document.querySelector('main').addEventListener('keydown', (event) => {
+  if (event.target.classList.contains('input-todo-day') && event.key === 'Enter') {
+    const dayContainer = event.target.closest('.day-container');
+    const dayId = dayContainer.getAttribute('data-day-id');
+    const newTask = event.target.value;
+
+    if (newTask !== '') {
+      addTaskToTaskList(newTask, dayId);
+      event.target.value = ''; // Очищаем поле ввода
+    }
+  }
+});
+
+// Функция для рендеринга задач для указанного дня
 export async function renderTaskList(dayId) {
   const taskListElement = document.querySelector(`.js-todo-day-list[data-day-id="${dayId}"]`);
   const tasks = await fetchTasksFromDB(dayId);
-  console.debug(`Rendering tasks for day: ${dayId}`, tasks);  // Логируем задачи для дня
   let html = ``;
   tasks.forEach((element) => {
     html += `
@@ -266,7 +310,6 @@ export async function renderTaskList(dayId) {
     button.addEventListener('click', (event) => {
       const taskId = event.target.getAttribute('task-id');
       const dayId = event.target.closest('.js-task-in-day').getAttribute('day-id');
-      console.debug(`Deleting task with ID: ${taskId} for day: ${dayId}`);  // Логируем удаление задачи для дня
       removeTaskfromTaskList(taskId, dayId);
     });
   });
@@ -277,16 +320,36 @@ export async function renderTaskList(dayId) {
     button.addEventListener('click', (event) => {
       const taskId = event.target.getAttribute('task-id');
       const dayId = event.target.closest('.js-task-in-day').getAttribute('day-id');
-      console.debug(`Marking task with ID: ${taskId} as completed for day: ${dayId}`);  // Логируем выполнение задачи для дня
       completeTaskInTaskList(taskId, dayId);
     });
   });
 }
 
-// Получаем задачи из базы данных
+// Обработчик событий для полей ввода задач в календаре
+document.querySelectorAll('.input-todo-day').forEach(input => {
+  input.addEventListener('focus', () => {
+    const addButton = input.nextElementSibling; // Предполагаем, что кнопка добавления следует за полем ввода
+    addButton.style.display = 'block';
+  });
+
+  input.addEventListener('blur', () => {
+    if (input.value === '') {
+      const addButton = input.nextElementSibling;
+      addButton.style.display = 'none';
+    }
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Инициализация отображения задач для всех дней
+  document.querySelectorAll('.day-container').forEach(dayContainer => {
+    const dayId = dayContainer.getAttribute('data-day-id');
+    renderTaskList(dayId);
+  });
+});
+
 export async function fetchTasksFromDB(dayId) {
   const token = localStorage.getItem('access_token');
-  console.debug(`Fetching tasks for day: ${dayId}`);  // Логируем запрос на получение задач
   const response = await fetch(`http://127.0.0.1:8000/tasks/day/${dayId}`, {
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -294,10 +357,10 @@ export async function fetchTasksFromDB(dayId) {
   });
   if (response.ok) {
     const tasks = await response.json();
-    console.debug('Fetched tasks:', tasks);  // Логируем полученные задачи
+    console.log('Fetched tasks:', tasks);  // Логируем полученные задачи
     return tasks;
   } else {
-    console.error('Failed to fetch tasks');  // Логируем ошибку получения задач
+    console.error('Failed to fetch tasks');
     return [];
   }
 }
