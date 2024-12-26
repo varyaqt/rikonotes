@@ -12,12 +12,31 @@ from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(title="RIKONOTES", description="Your personal task destroyer С:")
 
-# Подключение к MongoDB
-cluster = MongoClient(
-    "mongodb+srv://mi1en:1234@cluster0.qbxk9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-db = cluster["test"]
-users_collection = db['users']
-tasks_collection = db['tasks']
+
+class MongoDBClient:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._init_connection()
+        return cls._instance
+
+    def _init_connection(self):
+        self.cluster = MongoClient(
+            "mongodb+srv://mi1en:1234@cluster0.qbxk9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+        )
+        self.db = self.cluster["test"]
+
+    def get_collection(self, name):
+        return self.db[name]
+
+
+# Singleton для подключения к MongoDB
+mongo_client = MongoDBClient()
+users_collection = mongo_client.get_collection('users')
+tasks_collection = mongo_client.get_collection('tasks')
+
 
 # Секретный ключ для JWT
 SECRET_KEY = "your-secret-key"
@@ -57,13 +76,30 @@ class Task(BaseModel):
     class Config:
         allow_population_by_field_name = True  # Позволяет работать с _id как id
 
-# Вспомогательные функции
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+# Стратегия для паролей
+class PasswordHandler:
+    def __init__(self, strategy):
+        self._strategy = strategy
 
+    def execute(self, password, hashed_password=None):
+        return self._strategy(password, hashed_password)
+
+class HashPassword:
+    def __call__(self, password, hashed_password=None):
+        return pwd_context.hash(password)
+
+class VerifyPassword:
+    def __call__(self, password, hashed_password):
+        return pwd_context.verify(password, hashed_password)
+
+password_handler = PasswordHandler(HashPassword())
 
 def get_password_hash(password):
-    return pwd_context.hash(password)
+    return password_handler.execute(password)
+
+def verify_password(plain_password, hashed_password):
+    password_handler._strategy = VerifyPassword()
+    return password_handler.execute(plain_password, hashed_password)
 
 
 def get_user(username: str):
